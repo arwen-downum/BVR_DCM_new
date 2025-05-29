@@ -51,7 +51,7 @@ variables <- c("TN_ugL", "TP_ugL", "NH4_ugL", "NO3NO2_ugL",
 
 chem_weekly_sum <- weekly_sum_variables(chemistry_filtered_np, variables)
 
-#join to RF frame
+#join to frame with correct dates
 final_chem <- frame_weeks|>
   left_join(chem_weekly_sum, by = c("Week", "Year"))|>
   select(-WaterLevel_m)

@@ -377,7 +377,7 @@ ggplot(boxplot_Data, aes(x = factor(Year), y = max_conc)) +
 #frame that will be added to for RF analysis at the end
 #one measurement for each week that we have data available for 
 final_phytos <- final_DCM_metrics|>
-  group_by(Year,Week, WaterLevel_m)|>
+  group_by(Year,Week,WaterLevel_m)|>
   summarise(
     DCM_depth = mean(DCM_depth, na.rm = TRUE),
     max_conc = mean(max_conc, na.rm = TRUE),
@@ -389,8 +389,8 @@ final_phytos <- final_DCM_metrics|>
 
 #everything else will be joined to this dataframe
 frame_weeks <- final_phytos|>
-  select(Year, Week, WaterLevel_m)
-
+  distinct(Year, Week)|>
+  left_join(water_level, by = c("Week", "Year"))
 #metrics for each variable that needs to be calculated 
 #depth_var_max
 #depth_var_min
@@ -398,11 +398,3 @@ frame_weeks <- final_phytos|>
 #var_min_val
 #var_mean
 #var_range (max-main)
-
-#just getting distinct dates
-
-distinct_dates_2024 <- current_df %>%
-mutate(Date = as.Date(DateTime, format = "%Y-%m-%d")) %>%
-filter(year(Date) == 2024) %>%
-distinct(Date, Reservoir) %>%
-  arrange(Reservoir,Date)

@@ -174,6 +174,8 @@ looking<- final_data0|>
 
 ####RandomForest Anually####
 
+#not splitting dataset because not enough data
+
 #"We constructed a RF of 1500 trees for each of the two response
 #variables using 1% PAR depth (m), DOC concentration (mg L21),
 #thermocline depth (m), metalimnion thickness (m),
@@ -186,21 +188,59 @@ looking<- final_data0|>
 
 library(randomForest)
 library(missForest)
+# Identify numeric columns
+numeric_cols <- sapply(full_weekly_data, is.numeric)
+
+# Define a function to remove rows with Inf/-Inf
+remove_infinite <- function(df) {
+  df[apply(df, 1, function(row) all(is.finite(row))), ]
+}
+
+# Create cleaned dataset
+for_RF <- full_weekly_data |>
+  na.omit() |>
+  select(which(numeric_cols)) |>
+  remove_infinite()
 
 set.seed(123)  # Setting seed for reproducibility
 
-# Splitting data into training (70%) and testing (30%)
-index <- sample(1:nrow(Final_RF_frame), size = 0.7 * nrow(Final_RF_frame))  # 70% training data
-train_data <- Final_RF_frame[index, ]
-test_data <- Final_RF_frame[-index, ]
+####grid search####
 
-#should run model on test dataset , currently mine is running on training. 
-#training and test RMSE, MAE and Rsquare value important to show. 
-#GLM-AED
+# Load necessary library
+library(caret)
+library(future)
+# Define training control
+train_control <- trainControl(method = "cv", number = 5)
+grid <- expand.grid(mtry = c(2, 3, 4, 20, 50))  # only tuning mtry here. num of variables being randomly sampled
+
+results <- list()
+for (nt in c(50, 100, 200, 500)) {
+  model <- train(
+    DCM_depth ~ .,
+    data = for_RF,
+    method = "rf",
+    trControl = train_control,
+    tuneGrid = grid,
+    ntree = nt,
+    max.depth = 10, 
+    splitrule = "variance"
+  )
+  results[[as.character(nt)]] <- model
+}
+
+# Compare results
+lapply(results, function(x) max(x$results$Rsquared))
+print(model)
+
+bestModel <- model$bestTune
+print(bestModel)
+
+#default values are giving us a better result. We only define parameter for ntree
+
 
 # Remove non-numeric columns (excluding Date, Depth_m, Year, etc.)
-non_numeric_columns <- sapply(train_data, function(x) !is.numeric(x) & !is.factor(x))
-train_data_no_non_numeric <- train_data %>%
+non_numeric_columns <- sapply(full_weekly_data, function(x) !is.numeric(x) & !is.factor(x))
+train_data_no_non_numeric <- full_weekly_data |>
   select(-which(non_numeric_columns)) 
 
 # Replace Inf and NaN with NA in all numeric columns
@@ -220,7 +260,28 @@ train_data_imputed_z <- train_data_no_na %>%
   #  select(-WaterLevel_m)
   
   # Add the excluded non-numeric columns (e.g., Date) back to the imputed dataset
-  model_rf <- randomForest(DCM_depth ~ ., data = train_data_imputed_z, ntree = 500, importance = TRUE)
+set.seed(123)  
+for (tree_num in c(100, 200, 300, 500)) {
+  for (node_size in c(2, 4, 6, 8)) {
+    for (mt in c(3, 6, 9, 20, 50)) {
+      model_rf <- randomForest(
+        DCM_depth ~ ., 
+        data = train_data_imputed_z,
+        ntree = tree_num,
+        mtry = mt,
+        importance = TRUE
+      )
+      
+      rsq_test <- mean(model_rf$rsq)
+      mse_test <- mean(model_rf$mse)
+      
+      cat("Trees:", tree_num, "| Node size:", node_size, "| mtry:", mt,
+          "| R-squared:", rsq_test, "| MSE:", mse_test, "\n\n")
+    }
+  }
+}
+#Trees: 200 | Node size: 2 | mtry: 50 | R-squared: 0.6796417 | MSE: 1.614218 
+
   ######grid search CV function
   #look at hyperparameters for RandomForest tune as many as 
   #n_estimators, max_depth, minimum samples split, max_leaf nodes, and min_samples leaf
@@ -271,8 +332,8 @@ test_data_imputed_z <- test_data_no_na %>%
         !str_detect(Variable, "_(min_val|max_val|range)$")
     )
 
-rsq_test<- mean((test_model_rf$rsq))
-mse_test<- mean((test_model_rf$mse))
+rsq_test<- mean((model_rf$rsq))
+mse_test<- mean((model_rf$mse))
   
 #write.csv(Final_RF_frame, "Final_RF_frame.csv")  
 

@@ -52,7 +52,6 @@
   weekly_secchi <- frame_weeks|> #RF frame w metals and secchi
     left_join(secchi_interpolated, by = c("Year", "Week"))
   
-  data_availability(RF_frame_ms, variables)
   
   # Calculating K_d and light availability from secchi
   

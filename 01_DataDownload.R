@@ -1,9 +1,5 @@
 # Downloading data and functions here
 
-beep <- function(){
-  system("rundll32 user32.dll,MessageBeep") #just putting this here so I can be notified when something that takes a while to run is done
-}  
-
 pacman::p_load(tidyverse, patchwork, lubridate, akima, reshape2, pracma,
                gridExtra, grid, colorRamps, RColorBrewer, rLakeAnalyzer,
                reader, cowplot, dplyr, tidyr, ggplot2, zoo, purrr, beepr, forecast, ggthemes, splines)
@@ -15,8 +11,8 @@ pacman::p_load(tidyverse, patchwork, lubridate, akima, reshape2, pracma,
 CTD <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/200/15/9d741c9cced69cfd609c473ada2812b1")
 
 #flora data https://portal.edirepository.org/nis/mapbrowse?packageid=edi.272.9
-#nonupdated
-current_df <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/272/8/0359840d24028e6522f8998bd41b544e")
+#published 2024
+#current_df <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/272/8/0359840d24028e6522f8998bd41b544e")
 
 #published 2025
 phytos_df <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/272/9/f246b36c591a888cc70ebc87a5abbcb7")
