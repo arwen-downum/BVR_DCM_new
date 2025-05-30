@@ -119,4 +119,4 @@ ggplot(water_level, aes(x = Date, y = WaterLevel_m)) +
     y = "Water Level (m)"
   )
 
-write.csv(water_level, "water_level.csv", row.names = FALSE)
+write.csv(water_level, "CSVs/water_level.csv", row.names = FALSE)

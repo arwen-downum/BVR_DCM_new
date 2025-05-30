@@ -14,4 +14,5 @@ full_weekly_data <- frame_weeks %>%
   left_join(final_metals, by = c("Year", "Week")) %>%
   left_join(final_photic_thermo, by = c("Year", "Week")) %>%
   left_join(final_buoyancy, by = c("Year", "Week")) %>%
-  left_join(final_chem, by = c("Year", "Week"))
+  left_join(final_chem, by = c("Year", "Week")) %>%
+  left_join(final_schmidt, by = c("Year", "Week"))

@@ -63,6 +63,8 @@ final_data_no_na <- final_no_non_numeric %>%
 # Remove remaining rows with any NA values
 RF_depth_analysis <- final_data_no_na %>%
   na.omit()
+
+write.csv(RF_depth_analysis, "CSVs/RF_depth_analysis.csv", row.names = FALSE)
 ```
 
 Grid search. We do not have enough data to split into training and test set. 
