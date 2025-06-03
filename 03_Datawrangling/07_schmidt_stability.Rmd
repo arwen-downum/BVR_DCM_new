@@ -48,8 +48,12 @@ new_bath <- weekly_temp_profiles|>
   left_join(BVRbath, by = c("BathAdj" = "Depth_m"))|>
   select(-RoundedDepth, -WaterLevel_m, -BathDiff, -BathAdj, -buoyancy_freq)
 ```
+
 Yay! Now we have different bathymetry for each Date
-Let's try to calculate Schmidt stability
+Let's try to calculate Schmidt stability:
+Higher Schmidt stability → more energy needed to mix → stronger stratification
+Lower Schmidt stability → less energy needed → weaker or no stratification
+
 ```{r}
 schmidt_frame <- new_bath|>
   group_by(Date)|>

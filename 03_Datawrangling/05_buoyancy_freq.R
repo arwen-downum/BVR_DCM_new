@@ -1,5 +1,5 @@
 # buoyancy_freq
-# need to also add schmidt stablility
+# CHANGE THIS SO IT'S MAXIMUM BUOYANCY FREQUENCY
 
 ####Buoyancy Frequency ####
 buoyancy_frame <- temp_depths_cleaned|> #temp_depths_cleaned was loaded in from 04_photic_temp_thermo
