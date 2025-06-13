@@ -1,4 +1,4 @@
-# Downloading data and functions here arwen fdownum
+# Downloading data and functions here arwen downummm 
 
 pacman::p_load(tidyverse, patchwork, lubridate, akima, reshape2, pracma,
                gridExtra, grid, colorRamps, RColorBrewer, rLakeAnalyzer,
